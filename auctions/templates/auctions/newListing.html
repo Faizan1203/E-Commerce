@@ -1,0 +1,17 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+    {% if success == False %}
+        <alert class="alert alert-secondary">One or more fields in the form are empty</alert>
+    {% endif %}
+
+    <form action="{% url 'newListing' %}" method="post" enctype="multipart/form-data" autocomplete="off">
+
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit">
+
+    </form>
+
+{% endblock %}

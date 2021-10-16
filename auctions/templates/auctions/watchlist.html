@@ -1,0 +1,46 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+    <h2><u>Watchlist Items</u></h2>
+        <hr>
+        <div class = "row row-cols-1 row-cols-md-4">
+        {% for listing in listings %}
+            <div class="col mb-4 text-center" >
+                <div class="card h-100">
+
+                <a href="/listing_page/{{listing.id}}" class="card-link">
+                    <img src="{{ listing.image.url }}" class ="card-img-top">
+                </a>
+
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item card-title"><h5>{{ listing.title }}</h5></li>
+                        <li class="list-group-item card-text"><h6>Description: {{ listing.description }}</h6></li>
+                        <li class="list-group-item">Price: $
+                        {% if listing.current_bid %}
+
+                            {{ listing.current_bid }}
+
+                        {% else %}
+
+                            {{ listing.begining_bid }}
+
+                        {% endif %}
+
+                        </li>
+                        <div class="list-group-item card-footer"><small class="text-muted">Posted on: {{listing.created_date_time}} by {{listing.creator}}</small></div>
+                    </ul>
+                </div>
+                </div>
+                </div>
+
+        {% empty %}
+
+            <h4 class="info">No Active Listings</h4>
+
+        {% endfor %}
+
+    </div>
+
+{% endblock %}

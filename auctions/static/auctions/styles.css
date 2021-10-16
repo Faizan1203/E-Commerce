@@ -1,0 +1,15 @@
+body {
+    padding: 10px;
+}
+
+.heading, .sign-in{
+    text-align : left;
+}
+
+h2{
+    text-align: center;
+}
+
+.info{
+    text-align: center;
+}

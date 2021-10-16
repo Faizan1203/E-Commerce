@@ -1,0 +1,139 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+        {% if listing %}
+
+            <h1>Item: {{ listing.title }}</h1>
+
+            <div class="card mb-3">
+                <div class="row no-gutters">
+                    <div class="col-md-4">
+                        <a href="{{ listing.image.url }}" class="card-link">
+
+                            <img src="{{ listing.image.url }}" class ="card-img-top">
+
+                        </a>
+                    </div>
+                    <div class="col-md-8 text-center">
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item card-title"><h5>{{ listing.title }}</h5></li>
+                                <li class="list-group-item card-text"><h6>Description: {{ listing.description }}</h6></li>
+                                <li class="list-group-item">Price: $
+                                {% if listing.current_bid %}
+
+                                    {{ listing.current_bid }}
+
+                                {% else %}
+
+                                    {{ listing.begining_bid }}
+
+                                {% endif %}
+
+                                </li>
+                            </ul>
+                             {% if user.is_authenticated %}
+                                <small class="text-muted">Add to watchlist to view this item later on:</small>
+                                <div>
+                                    <a href="/change_watchlist/{{listing.id}}/listing_page">
+                                    {% if request.user in listing_users %}
+                                        Remove from watchlist
+                                    {% else %}
+                                        Add to watchlist
+                                    {% endif %}
+                                    </a>
+                                </div>
+                                <hr>
+                            {% endif %}
+                        {% if error %}
+                             <div class="alert alert-danger" role="alert">
+                                Value should be greater than the current bid
+                            </div>
+                        {% endif %}
+
+                    {% if user.is_authenticated %}
+                        {% if listing.flActive == True %}
+                            <div class="form-group">
+                                    <form action="/new_bid/{{listing.id}}" method="post" autocomplete="off">
+                                    <small class="text-muted">Bid on this item!</small>
+                                    {% csrf_token %}
+                                    {{new_bid_form.as_p}}
+                                    <button type="submit" class="btn btn-primary ">Make bid</button>
+                                    </form>
+                            </div>
+                        {% endif %}
+                        {% else %}
+                        <h3 style="text-align:center">Log in to Bid</h3>
+                    {% endif %}
+                        {% if request.user == listing.creator %}
+
+                            {% if listing.flActive == True %}
+                                <div class="form-group">
+                                    <form class="row listing-page-bid-close-section" method="POST" action="/close_bid/{{listing.id}}">
+                                        {%  csrf_token %}
+                                        <button class="btn btn-primary col-4 offset-4">Close this Bid</button>
+                                    </form>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                            {% if listing.flActive != True %}
+                                <h5>This listing has been closed</h5>
+                                {% if request.user == listing.buyer %}
+                                    Congrats! You have won the bid
+                                {% else %}
+                                    <h5>Congrats {{listing.buyer}} has won the auction</h5>
+                                {% endif %}
+                            {% endif %}
+
+                        <div class="list-group-item card-footer"><small class="text-muted">Posted on: {{listing.created_date_time}} by {{listing.creator}}</small></div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% else %}
+
+            <h1>No such active listings</h1>
+
+        {% endif %}
+
+{% if user.is_authenticated %}
+{% if listing.flActive == True %}
+<div class="form-group text-center">
+    <form action="/comment/{{listing.id}}" method="post" autocomplete="off">
+
+        {% csrf_token %}
+        <b>{{ new_comment_form.as_p }}</b>
+        <button type="submit" class="btn btn-primary">Comment</button>
+
+    </form>
+</div>
+{% endif %}
+{% else %}
+<h3 style="text-align:center">Log in to comment</h3>
+{% endif %}
+<div class="row row-cols-1 row-cols-md-3">
+{% for comment in comments %}
+
+
+<div class="col mb-4">
+<div class="card text-center">
+    <div class="card-header">
+        Commented on {{comment.created_date_time}}
+    </div>
+    <div class="card-body">
+        <blockquote class="blockquote mb-0">
+            <p>{{comment.comment}}</p>
+            <footer class="blockquote-footer">By <cite title="Source Title">{{comment.user}}</cite></footer>
+        </blockquote>
+    </div>
+</div>
+</div>
+
+{% endfor %}
+</div>
+
+
+{% endblock %}
